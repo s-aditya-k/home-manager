@@ -709,5 +709,14 @@ in
         (map (plugin: { "${pluginsDir}/${plugin.name}".source = plugin.src; })
         cfg.plugins);
     })
+    {
+      assertions = let
+        customPkgs = cfg.oh-my-zsh.customPkgs;
+        custom = cfg.oh-my-zsh.custom;
+      in [{
+        assertion = custom != "" && length customPkgs;
+        message = "Both `programs.zsh.oh-my-zsh.custom` ('" + custom + "') and `programs.zsh.oh-my-zsh.customPkgs` ([" + toString customPkgs + "]) set.";
+      }];
+    }
   ]);
 }
