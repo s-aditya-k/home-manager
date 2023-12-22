@@ -511,6 +511,13 @@ in
   };
 
   config = mkIf cfg.enable (mkMerge [
+    {
+      assertions = [{
+        assertion = with config.programs.zsh.oh-my-zsh; custom == "" || length customPkgs == 0;
+        message = ''The options `programs.zsh.oh-my-zsh.custom' and `programs.zsh.oh-my-zsh.customPkgs' are mutually exclusive.'';
+      }];
+    }
+
     (mkIf (cfg.envExtra != "") {
       home.file."${relToDotDir ".zshenv"}".text = cfg.envExtra;
     })
@@ -709,14 +716,5 @@ in
         (map (plugin: { "${pluginsDir}/${plugin.name}".source = plugin.src; })
         cfg.plugins);
     })
-    {
-      assertions = let
-        customPkgs = cfg.oh-my-zsh.customPkgs;
-        custom = cfg.oh-my-zsh.custom;
-      in [{
-        assertion = custom != "" && length customPkgs;
-        message = "Both `programs.zsh.oh-my-zsh.custom` ('" + custom + "') and `programs.zsh.oh-my-zsh.customPkgs` ([" + toString customPkgs + "]) set.";
-      }];
-    }
   ]);
 }
